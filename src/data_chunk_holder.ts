@@ -27,6 +27,9 @@ export class data_chunk_holder {
   public to_string(): string {
     return this.m_data_chunk.to_string();
   }
+  public to_string_if_printable(): string | undefined {
+    return this.m_data_chunk.to_string_if_printable();
+  }
   public to_uint8(): number {
     return this.m_data_chunk.to_uint8();
   }
