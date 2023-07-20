@@ -194,7 +194,9 @@ export class tlv {
 
     const tag_name = (() => {
       const infos = EmvTags.Instance.findByTag(this.tag.to_hex_string());
-      if(infos.length == 0) return "unknown";
+      if(infos.length == 0) {
+        return this.tag.is_constructed ? "unknown template" : "unknown value";
+      }
       const target = infos.find(info => {
         if(info.length){
           if(info.length != this.length.value_length) return false;
