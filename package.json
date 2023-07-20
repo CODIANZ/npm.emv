@@ -25,5 +25,8 @@
   },
   "devDependencies": {
     "typescript": "^4.3.4"
+  },
+  "dependencies": {
+    "@codianz/singleton": "0.0.4"
   }
 }

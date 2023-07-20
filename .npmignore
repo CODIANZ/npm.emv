@@ -3,4 +3,5 @@ dist/**/*.map.js
 .vscode/
 src/
 test/
+tools/
 tsconfig.json
