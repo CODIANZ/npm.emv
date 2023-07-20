@@ -1,6 +1,6 @@
 {
   "name": "@codianz/emv-tools",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "EMV tools.",
   "main": "./dist/src/index.js",
   "scripts": {
@@ -25,5 +25,8 @@
   },
   "devDependencies": {
     "typescript": "^4.3.4"
+  },
+  "dependencies": {
+    "@codianz/singleton": "0.0.4"
   }
 }

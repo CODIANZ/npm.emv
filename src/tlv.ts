@@ -1,5 +1,6 @@
 import {data_chunk_holder} from "./data_chunk_holder"
 import {data_chunk} from "./data_chunk"
+import { EmvTags } from "./emv_tags";
 
 
 export namespace TLV {
@@ -178,7 +179,7 @@ export class tlv {
     }
     return new tlv();
   }
-  public to_string(indent: number = 0): string {
+  public to_string(indent: number = 0, parentTag?: TLV.tag): string {
     if(!this.valid) return "(invalid tlv)";
     
     const class_type_to_string = (class_type: TLV.class_type): string => {
@@ -191,22 +192,41 @@ export class tlv {
       }
     };
 
+    const tag_name = (() => {
+      const infos = EmvTags.Instance.findByTag(this.tag.to_hex_string());
+      if(infos.length == 0) return "unknown";
+      const target = infos.find(info => {
+        if(info.length){
+          if(info.length != this.length.value_length) return false;
+        }
+        return info.template.find(x => x == parentTag?.to_hex_string()) != undefined;
+      });
+      if(target) return target.name;
+      if(parentTag === undefined) return infos[0].name;
+      return `${infos[0].name} (?)`;
+    })();
+
+    const value_string = (() => {
+      const s = this.value.to_string_if_printable();
+      return s ? `"${s}"` : "";
+    })();
+
     const _i = "  ".repeat(indent);
     let result = "";
 
-    result += _i + `tag: ${this.tag.data_chunk.to_hex_string()}\n`;
-    result += _i + ` - class_type: ${class_type_to_string(this.tag.class_type)}\n`;
-    result += _i + ` - is_constructed: ${this.tag.is_constructed}\n`;
-    result += _i + ` - is_premitive: ${this.tag.is_primitive}\n`;
+    result += _i + `tag: ${this.tag.data_chunk.to_hex_string()} (${tag_name})\n`;
+    // result += _i + ` - class_type: ${class_type_to_string(this.tag.class_type)}\n`;
+    // result += _i + ` - is_constructed: ${this.tag.is_constructed}\n`;
+    // result += _i + ` - is_premitive: ${this.tag.is_primitive}\n`;
     result += _i + `length: ${this.length.data_chunk.to_hex_string()} (${this.length.value_length})\n`;
-    result += _i + `value: ${this.value.data_chunk.to_hex_string()}\n`;
+    result += _i + `value: ${this.value.data_chunk.to_hex_string()} ${value_string}\n`;
     
     if(this.children.length == 0) return result;
 
     result += _i + "children:\n";
     for(let i = 0; i < this.children.length; i++) {
       result += _i + `[${i}]\n`;
-      result += this.children[i].to_string(indent + 1);
+      result += this.children[i].to_string(indent + 1, this.tag);
     }
     return result;
   }
