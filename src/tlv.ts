@@ -135,8 +135,8 @@ export class tlv {
       const src = this.value.data_chunk;
       while(idx < src.size) {
         const child = tlv.create_from_data_chunk(src.get_range(idx, src.size - idx));
-        if(!child.valid) break;
         this.m_children.push(child);
+        if(!child.valid) break;
         idx += child.size;
       }
     }
@@ -180,17 +180,19 @@ export class tlv {
     return new tlv();
   }
   public to_string(indent: number = 0, parentTag?: TLV.tag): string {
-    if(!this.valid) return "(invalid tlv)";
+    const _i = "  ".repeat(indent);
+
+    if(!this.valid) return _i + "(invalid tlv)";
     
-    const class_type_to_string = (class_type: TLV.class_type): string => {
-      switch(class_type) {
-        case TLV.class_type.invalid: return "invalid";
-        case TLV.class_type.universal: return "universal";
-        case TLV.class_type.application: return "application";
-        case TLV.class_type.context_specific: return "context_specific";
-        case TLV.class_type.private_use: return "private_use";
-      }
-    };
+    // const class_type_to_string = (class_type: TLV.class_type): string => {
+    //   switch(class_type) {
+    //     case TLV.class_type.invalid: return "invalid";
+    //     case TLV.class_type.universal: return "universal";
+    //     case TLV.class_type.application: return "application";
+    //     case TLV.class_type.context_specific: return "context_specific";
+    //     case TLV.class_type.private_use: return "private_use";
+    //   }
+    // };
 
     const tag_name = (() => {
       const infos = EmvTags.Instance.findByTag(this.tag.to_hex_string());
@@ -213,7 +215,6 @@ export class tlv {
       return s ? `"${s}"` : "";
     })();
 
-    const _i = "  ".repeat(indent);
     let result = "";
 
     result += _i + `tag: ${this.tag.data_chunk.to_hex_string()} (${tag_name})\n`;
