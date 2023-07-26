@@ -24,6 +24,14 @@ export class data_chunk {
     }
     return new data_chunk(data);
   }
+  public static create_from_hex_string_loosey(str: string): data_chunk {
+    const s = str.replace(/0x/g, "").replace(/\s/g, "").replace(/,/g, "");
+    const data = new Uint8Array(s.length / 2);
+    for(let i = 0; i < s.length; i += 2){
+      data[i / 2] = parseInt(s.substring(i, i + 2), 16);
+    }
+    return new data_chunk(data);
+  }
   public get valid(): boolean {
     return this.m_data !== undefined;
   }
