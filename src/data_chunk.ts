@@ -13,23 +13,44 @@ export class data_chunk {
   public static invalid(): data_chunk {
     return new data_chunk();
   }
+  private static string_to_uint8array(s: string): Uint8Array
+  {
+    const charcode_to_hex = (c: number): number | undefined => {
+      if(c >= 0x30 && c <= 0x39){
+        return c - 0x30;
+      }
+      else if(c >= 0x41 && c <= 0x46){
+        return c - 0x41 + 10;
+      }
+      else if(c >= 0x61 && c <= 0x66){
+        return c - 0x61 + 10;
+      }
+      return undefined;
+    };
+
+    const r = new Uint8Array(s.length / 2);
+    let wp = 0;
+    for(let i = 0; i < s.length; i+= 2){
+      const u = charcode_to_hex(s.charCodeAt(i));
+      const l = charcode_to_hex(s.charCodeAt(i + 1));
+      if(u === undefined || l === undefined){
+        break;
+      }
+      r[wp++] = (u << 4) | l;
+    }
+    return r.subarray(0, wp);
+  }
   public static create_from_hex_string(str: string): data_chunk {
     const s = str.replace(/0x/g, "").replace(/\s/g, "").replace(/,/g, "");
     if(s.length % 2 !== 0){
-      throw new Error("Invalid hex string");
+      throw new Error("wrong length");
     }
-    const data = new Uint8Array(s.length / 2);
-    for(let i = 0; i < s.length; i += 2){
-      data[i / 2] = parseInt(s.substring(i, i + 2), 16);
-    }
+    const data = data_chunk.string_to_uint8array(s);
     return new data_chunk(data);
   }
   public static create_from_hex_string_loosey(str: string): data_chunk {
     const s = str.replace(/0x/g, "").replace(/\s/g, "").replace(/,/g, "");
-    const data = new Uint8Array(s.length / 2);
-    for(let i = 0; i < s.length; i += 2){
-      data[i / 2] = parseInt(s.substring(i, i + 2), 16);
-    }
+    const data = data_chunk.string_to_uint8array(s);
     return new data_chunk(data);
   }
   public get valid(): boolean {

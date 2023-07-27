@@ -1,6 +1,6 @@
 {
   "name": "@codianz/emv-tools",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "EMV tools.",
   "main": "./dist/src/index.js",
   "scripts": {
